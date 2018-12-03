@@ -30,6 +30,8 @@ public class CustomImageview extends ImageView {
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.mipmap.btn_rating_star_on_selected);
         initParticles(bitmap);
         initValueAniater();
+
+        bitmap = null;
     }
 
     @Override
@@ -84,13 +86,16 @@ public class CustomImageview extends ImageView {
         valueAnimator.addUpdateListener(animatorUpdateListener);//监听大约16~18毫秒执行一次，与duration无关
     }
 
+    boolean state = false;
     @Override
     public boolean onTouchEvent(MotionEvent event) {
 
         switch (event.getAction()){
             case MotionEvent.ACTION_DOWN:
-                valueAnimator.start();
-
+                if (!state){
+                    valueAnimator.start();
+                    state = true;
+                }
                 break;
         }
         return true;
@@ -102,11 +107,13 @@ public class CustomImageview extends ImageView {
             if (list.size()==0){
                 valueAnimator.removeUpdateListener(animatorUpdateListener);
                 valueAnimator.cancel();
+                state = false;//停止animator
 
                 Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.mipmap.btn_rating_star_on_selected);
                 initParticles(bitmap);
                 invalidate();
                 initValueAniater();
+                bitmap = null;
                 return;
             }
             updateParticles();
